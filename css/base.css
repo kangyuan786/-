@@ -1,0 +1,59 @@
+:root{
+    --green:#304d3b;
+    --green-light:#4d6c57;
+    --oat:#f4efe6;
+    --gray:#e3ddd4;
+    --text:#2d2d2d;
+    --white:#ffffff;
+    --card:#ffffff;
+    --soft:#f7f7f7;
+    --soft-green:#eef3ef;
+    --soft-yellow:#fff7df;
+    --danger:#d8a59f;
+    --danger-strong:#d9534f;
+    --edit:#3b5d49;
+    --line:#e8e2d8;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"PingFang TC","Noto Sans TC",sans-serif;
+    background:var(--oat);
+    color:var(--text);
+    padding-bottom:120px;
+}
+
+button,
+input,
+select{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+input,
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    background:white;
+}
+
+input::placeholder{
+    color:#aaa;
+}
+
+.soft-line{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:20px 0;
+}

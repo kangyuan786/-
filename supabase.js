@@ -1,0 +1,331 @@
+const SUPABASE_URL =
+"https://nxuhoyehuglsaneprcdt.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_bW1XfGHyJnpC7lBkXecU8w_MUv1Qv-m";
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+console.log(
+    "Supabase已連線",
+    supabaseClient
+);
+
+async function loadCustomersFromSupabase(){
+
+    const { data, error } =
+    await supabaseClient
+    .from("customers")
+    .select("*")
+    .order("name");
+
+    if(error){
+        console.error("讀取客戶失敗", error);
+        return [];
+    }
+
+    return data;
+
+}
+
+async function addCustomerToSupabase(name){
+
+    const { data, error } =
+    await supabaseClient
+    .from("customers")
+    .insert([{ name }])
+    .select();
+
+    console.log("新增客戶結果", data, error);
+
+    if(error){
+        console.error("新增客戶失敗", error);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function updateCustomerInSupabase(oldName,newName){
+
+    const { data, error } =
+    await supabaseClient
+    .from("customers")
+    .update({ name:newName })
+    .eq("name", oldName)
+    .select();
+
+    console.log("修改客戶結果", data, error);
+
+    if(error){
+        console.error("修改客戶失敗", error);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function deleteCustomerFromSupabase(name){
+
+    const targetName =
+    name.trim();
+
+    const { data, error } =
+    await supabaseClient
+    .from("customers")
+    .delete()
+    .eq("name", targetName)
+    .select();
+
+    console.log("客戶刪除結果", data, error);
+
+    if(error){
+        console.error("刪除客戶失敗", error);
+        return false;
+    }
+
+    if(!data || data.length === 0){
+        console.warn("沒有刪到任何客戶", targetName);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function loadProductsFromSupabase(){
+
+    const { data, error } =
+    await supabaseClient
+    .from("products")
+    .select("*")
+    .order("category")
+    .order("name");
+
+    if(error){
+        console.error("讀取商品失敗", error);
+        return [];
+    }
+
+    return data;
+
+}
+
+async function addProductToSupabase(name,category){
+
+    const { data, error } =
+    await supabaseClient
+    .from("products")
+    .insert([{ name, category }])
+    .select();
+
+    console.log("商品新增結果", data, error);
+
+    if(error){
+        console.error("新增商品失敗", error);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function updateProductInSupabase(category,oldName,newName){
+
+    const { data, error } =
+    await supabaseClient
+    .from("products")
+    .update({ name:newName })
+    .eq("category", category)
+    .eq("name", oldName)
+    .select();
+
+    console.log("商品修改結果", data, error);
+
+    if(error){
+        console.error("修改商品失敗", error);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function deleteProductFromSupabase(category,name){
+
+    const { error } =
+    await supabaseClient
+    .from("products")
+    .delete()
+    .eq("category", category)
+    .eq("name", name);
+
+    console.log("商品刪除結果", error);
+
+    if(error){
+        console.error("刪除商品失敗", error);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function saveOrderToSupabase(order){
+
+    const orderDate =
+    new Date()
+    .toISOString()
+    .slice(0,10);
+
+    const { data, error } =
+    await supabaseClient
+    .from("orders")
+    .insert([
+        {
+            customer_name:order.customer,
+            total:order.total,
+            order_date:orderDate
+        }
+    ])
+    .select()
+    .single();
+
+    console.log("訂單新增結果", data, error);
+
+    if(error){
+        console.error("新增訂單失敗", error);
+        return null;
+    }
+
+    return data;
+
+}
+
+async function saveOrderItemsToSupabase(orderId,items){
+
+    const rows =
+    items.map(item=>{
+
+        return {
+            order_id:orderId,
+            product_name:item.name,
+            price_mode:item.priceMode || "",
+            qty:Number(item.qty) || 0,
+            unit:item.unit || "",
+            unit_price:Number(item.unitPrice) || 0,
+            weight:item.weight || "",
+            amount:Number(item.amount),
+            remark:item.remark || ""
+        };
+
+    });
+
+    const { data, error } =
+    await supabaseClient
+    .from("order_items")
+    .insert(rows)
+    .select();
+
+    console.log("訂單明細新增結果", data, error);
+
+    if(error){
+        console.error("新增訂單明細失敗", error);
+        return false;
+    }
+
+    return true;
+
+}
+
+async function loadOrdersFromSupabase(){
+
+    const { data: orders, error: orderError } =
+    await supabaseClient
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending:false });
+
+    if(orderError){
+        console.error("讀取訂單失敗", orderError);
+        return [];
+    }
+
+    const { data: items, error: itemError } =
+    await supabaseClient
+    .from("order_items")
+    .select("*");
+
+    if(itemError){
+        console.error("讀取訂單明細失敗", itemError);
+        return [];
+    }
+
+    const result =
+    orders.map(order=>{
+
+        const orderItems =
+        items
+        .filter(item=>item.order_id === order.id)
+        .map(item=>{
+
+            return {
+                name:item.product_name,
+                priceMode:item.price_mode,
+                qty:item.qty,
+                unit:item.unit,
+                unitPrice:item.unit_price,
+                weight:item.weight,
+                amount:item.amount,
+                remark:item.remark
+            };
+
+        });
+
+        return {
+            id:order.id,
+            customer:order.customer_name,
+            date:order.created_at,
+            total:order.total,
+            items:orderItems
+        };
+
+    });
+
+    return result;
+
+}
+
+async function deleteOrderFromSupabase(orderId){
+
+    const { error: itemError } =
+    await supabaseClient
+    .from("order_items")
+    .delete()
+    .eq("order_id", orderId);
+
+    if(itemError){
+        console.error("刪除訂單明細失敗", itemError);
+        return false;
+    }
+
+    const { error: orderError } =
+    await supabaseClient
+    .from("orders")
+    .delete()
+    .eq("id", orderId);
+
+    if(orderError){
+        console.error("刪除訂單失敗", orderError);
+        return false;
+    }
+
+    return true;
+
+}

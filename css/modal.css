@@ -1,0 +1,79 @@
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-content{
+    width:90%;
+    max-width:430px;
+    background:white;
+    padding:22px;
+    border-radius:20px;
+}
+
+.modal-content h2{
+    margin-bottom:15px;
+}
+
+.modal-content input,
+.modal-content select{
+    margin-bottom:12px;
+}
+
+.modal-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.modal-buttons button{
+    flex:1;
+    border:none;
+    padding:13px;
+    border-radius:12px;
+    font-size:16px;
+}
+
+#cancelBtn,
+#receiptCancelBtn{
+    background:#ddd;
+}
+
+#saveBtn,
+#confirmCheckoutBtn{
+    background:var(--green);
+    color:white;
+}
+
+#copyReceiptBtn{
+    background:var(--green-light);
+    color:white;
+}
+
+.receipt-modal-content{
+    max-width:430px;
+}
+
+.receipt-preview{
+    background:#fffdf7;
+    border:1px dashed #aaa;
+    padding:14px;
+    border-radius:12px;
+    font-family:"Courier New","PingFang TC",monospace;
+    font-size:15px;
+    line-height:1.8;
+    white-space:pre-wrap;
+    margin-bottom:14px;
+}
+
+.receipt-buttons{
+    flex-direction:column;
+}
