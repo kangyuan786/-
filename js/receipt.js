@@ -62,7 +62,7 @@ function buildReceiptHtml(order){
 
         return `
             <div class="receipt-grid-row">
-                <div class="receipt-col receipt-name">${safeText(row.name)}</div>
+                <div class="receipt-col receipt-name" title="${safeText(row.name)}">${safeText(row.name)}</div>
                 <div class="receipt-col receipt-qty">${safeText(row.qty)}</div>
                 <div class="receipt-col receipt-unit">${safeText(row.unit)}</div>
                 <div class="receipt-col receipt-price">${safeText(row.unitPrice)}</div>
