@@ -232,55 +232,277 @@ function viewHistoryReceipt(id){
 }
 
 
-function openReceiptFullscreen(){
+function buildReceiptSharePage(order){
 
-    const modal =
-    document.getElementById("receiptModal");
+    const receiptHtml =
+    buildReceiptHtml(order);
 
-    if(!modal){
-        alert("目前沒有可顯示的出貨單");
-        return;
+    const receiptText =
+    buildReceiptText(order)
+    .replace(/`/g,"\`");
+
+    return `
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>康源蔬果行出貨單</title>
+<style>
+:root{
+    --green:#304d3b;
+    --oat:#f4efe6;
+    --paper:#fffdf7;
+    --line:#222;
+}
+*{
+    box-sizing:border-box;
+}
+body{
+    margin:0;
+    padding:18px;
+    background:var(--oat);
+    font-family:"PingFang TC","Noto Sans TC",sans-serif;
+    color:#222;
+}
+.share-shell{
+    max-width:520px;
+    margin:0 auto;
+}
+.share-tip{
+    background:#ffffff;
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:14px;
+    font-size:14px;
+    line-height:1.7;
+    color:#444;
+}
+.share-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:14px 0;
+}
+.share-actions button{
+    border:none;
+    border-radius:14px;
+    padding:13px 10px;
+    font-size:16px;
+    font-weight:800;
+}
+.primary{
+    background:var(--green);
+    color:#fff;
+}
+.secondary{
+    background:#fff;
+    color:var(--green);
+}
+.receipt-paper{
+    background:var(--paper);
+    border:1.5px dashed #888;
+    border-radius:18px;
+    padding:18px;
+    color:#222;
+}
+.receipt-title{
+    font-size:20px;
+    font-weight:900;
+    margin-bottom:20px;
+}
+.receipt-customer{
+    font-size:18px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+.receipt-date{
+    font-size:16px;
+    letter-spacing:1px;
+    margin-bottom:12px;
+}
+.receipt-dash{
+    border-top:2px dashed var(--line);
+    margin:12px 0;
+}
+.receipt-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    font-size:13px;
+}
+.receipt-table th{
+    font-weight:900;
+    padding:6px 2px 8px;
+    border-bottom:1.5px dashed var(--line);
+}
+.receipt-table td{
+    padding:7px 2px;
+    border-bottom:1px solid rgba(0,0,0,.13);
+    vertical-align:middle;
+}
+.receipt-table tbody tr:last-child td{
+    border-bottom:none;
+}
+.receipt-name{
+    width:30%;
+    text-align:left;
+    font-weight:800;
+    word-break:break-word;
+}
+.receipt-num{
+    width:12%;
+    text-align:right;
+}
+.receipt-unit{
+    width:11%;
+    text-align:center;
+}
+.receipt-price{
+    width:13%;
+    text-align:right;
+}
+.receipt-money{
+    width:16%;
+    text-align:right;
+    font-weight:800;
+}
+.receipt-note{
+    width:18%;
+    text-align:right;
+    color:#444;
+    word-break:break-word;
+}
+.receipt-total{
+    font-size:18px;
+    font-weight:900;
+    margin-top:12px;
+}
+@media(max-width:480px){
+    body{
+        padding:12px;
+    }
+    .receipt-paper{
+        padding:14px;
+    }
+    .receipt-table{
+        font-size:12px;
+    }
+}
+@media print{
+    body{
+        background:#fff;
+        padding:0;
+    }
+    .share-tip,
+    .share-actions{
+        display:none;
+    }
+    .receipt-paper{
+        border:none;
+        border-radius:0;
+    }
+}
+</style>
+</head>
+<body>
+<div class="share-shell">
+
+    <div class="share-tip">
+        這是出貨單分享頁。手機上可以直接截圖傳給客戶；也可以按「分享文字」或「複製文字」。
+    </div>
+
+    <div class="share-actions">
+        <button class="primary" onclick="shareText()">分享文字</button>
+        <button class="secondary" onclick="copyText()">複製文字</button>
+        <button class="secondary" onclick="window.print()">列印/PDF</button>
+        <button class="secondary" onclick="window.close()">關閉</button>
+    </div>
+
+    ${receiptHtml}
+
+</div>
+
+<script>
+const receiptText = \`${receiptText}\`;
+
+async function shareText(){
+    if(navigator.share){
+        try{
+            await navigator.share({
+                title:"康源蔬果行出貨單",
+                text:receiptText
+            });
+            return;
+        }catch(error){
+            if(error && error.name === "AbortError"){
+                return;
+            }
+        }
     }
 
-    modal.classList.add("receipt-fullscreen");
-    document.body.classList.add("receipt-lock");
+    await copyText();
+}
 
-    const btn =
-    document.getElementById("downloadReceiptImageBtn");
-
-    if(btn){
-        btn.innerText = "退出全螢幕";
-        btn.onclick = closeReceiptFullscreen;
+async function copyText(){
+    try{
+        await navigator.clipboard.writeText(receiptText);
+        alert("已複製出貨單文字");
+    }catch(error){
+        alert("複製失敗，請手動選取內容");
     }
+}
+</script>
+</body>
+</html>
+`;
 
 }
 
-function closeReceiptFullscreen(){
+function openReceiptSharePage(){
 
-    const modal =
-    document.getElementById("receiptModal");
+    const order =
+    pendingOrder ||
+    historyOrders[0];
 
-    if(modal){
-        modal.classList.remove("receipt-fullscreen");
+    const preview =
+    document.querySelector(".receipt-paper");
+
+    if(!pendingOrder && !preview){
+        alert("目前沒有可分享的出貨單");
+        return;
     }
 
-    document.body.classList.remove("receipt-lock");
+    const targetOrder =
+    pendingOrder ||
+    {
+        customer:"康源蔬果行",
+        date:new Date(),
+        total:"",
+        items:[]
+    };
 
-    const btn =
-    document.getElementById("downloadReceiptImageBtn");
+    const html =
+    buildReceiptSharePage(targetOrder);
 
-    if(btn){
-        btn.innerText = "全螢幕出貨單";
-        btn.onclick = openReceiptFullscreen;
+    const page =
+    window.open("","_blank");
+
+    if(!page){
+        alert("瀏覽器阻擋了新視窗，請允許彈出視窗後再試一次");
+        return;
     }
+
+    page.document.open();
+    page.document.write(html);
+    page.document.close();
 
 }
 
 async function downloadReceiptImage(){
 
-    openReceiptFullscreen();
+    openReceiptSharePage();
 
 }
-
 
 

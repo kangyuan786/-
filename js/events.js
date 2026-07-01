@@ -58,8 +58,6 @@ function bindEvents(){
     document.getElementById("receiptCancelBtn")
     .addEventListener("click",()=>{
 
-        closeReceiptFullscreen();
-
         document.getElementById("receiptModal")
         .classList.remove("show");
 
@@ -83,13 +81,6 @@ function bindEvents(){
 
     if(shipDateInput){
         shipDateInput.addEventListener("change",updatePendingReceiptDate);
-    }
-
-    const downloadBtn =
-    document.getElementById("downloadReceiptImageBtn");
-
-    if(downloadBtn){
-        downloadBtn.onclick = openReceiptFullscreen;
     }
 
     document.getElementById("confirmCheckoutBtn")
