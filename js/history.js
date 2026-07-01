@@ -123,63 +123,51 @@ function renderHistory(){
         card.className =
         "history-card";
 
-        const detailHtml =
-        order.items.map(item=>{
-
-            return `
-                <div>
-                    ${safeText(item.name)}
-                    ${item.remark ? `(${safeText(item.remark)})` : ""}
-                    ${getItemQtyText(item)}
-                    $${item.amount}
-                </div>
-            `;
-
-        }).join("");
+        const itemCount =
+        order.items ? order.items.length : 0;
 
         card.innerHTML = `
-            <div><strong>${safeText(order.customer)}</strong></div>
-
-            <div>
-                ${formatReceiptDate(order.date)}
-            </div>
-
-            <div>
-                合計 $${order.total}
-            </div>
-
             <div class="history-swipe-wrap">
 
-                <button
-                    class="history-swipe-delete"
-                    onclick="deleteHistoryOrder('${order.id}')">
-                    刪除
-                </button>
+                <div class="history-action-panel">
+                    <button
+                        class="history-action-btn view"
+                        onclick="viewHistoryReceipt('${order.id}')">
+                        查看
+                    </button>
+
+                    <button
+                        class="history-action-btn edit"
+                        onclick="editHistoryOrder('${order.id}')">
+                        編輯
+                    </button>
+
+                    <button
+                        class="history-action-btn repeat"
+                        onclick="repeatHistoryOrder('${order.id}')">
+                        再次出貨
+                    </button>
+
+                    <button
+                        class="history-action-btn delete"
+                        onclick="deleteHistoryOrder('${order.id}')">
+                        刪除
+                    </button>
+                </div>
 
                 <div class="history-main">
-
-                    <div class="history-actions history-actions-extended">
-                        <button onclick="viewHistoryReceipt('${order.id}')">
-                            👁️ 查看
-                        </button>
-
-                        <button onclick="copyHistoryReceipt('${order.id}')">
-                            📋 重印
-                        </button>
-
-                        <button onclick="loadHistoryToCurrentOrder('${order.id}')">
-                            ✏️ 編輯
-                        </button>
-
-                        <button onclick="loadHistoryToCurrentOrder('${order.id}')">
-                            🔁 再出貨
-                        </button>
+                    <div class="history-customer">
+                        ${safeText(order.customer)}
                     </div>
 
-                    <div class="history-detail">
-                        ${detailHtml}
+                    <div class="history-meta">
+                        <span>${formatReceiptDate(order.date)}</span>
+                        <span>$${order.total}</span>
                     </div>
 
+                    <div class="history-count">
+                        ${itemCount} 項商品
+                    </div>
                 </div>
 
             </div>
@@ -191,11 +179,11 @@ function renderHistory(){
                 return;
             }
 
-            const detail =
-            card.querySelector(".history-detail");
+            const swipeWrap =
+            card.querySelector(".history-swipe-wrap");
 
-            if(detail){
-                detail.classList.toggle("show");
+            if(swipeWrap){
+                swipeWrap.classList.toggle("swipe-delete");
             }
 
         });
@@ -229,11 +217,11 @@ function bindHistorySwipe(card){
 
         if(!swipeWrap) return;
 
-        if(touchStartX - touchEndX > 60){
+        if(touchStartX - touchEndX > 55){
             swipeWrap.classList.add("swipe-delete");
         }
 
-        if(touchEndX - touchStartX > 60){
+        if(touchEndX - touchStartX > 55){
             swipeWrap.classList.remove("swipe-delete");
         }
 
@@ -241,17 +229,23 @@ function bindHistorySwipe(card){
 
 }
 
-function loadHistoryToCurrentOrder(id){
+function repeatHistoryOrder(id){
 
     const order =
     historyOrders.find(item=>String(item.id) === String(id));
 
     if(!order){
-        alert("找不到這筆歷史紀錄");
+        alert("找不到這筆出貨紀錄");
         return;
     }
 
-    currentCustomer = order.customer;
+    const confirmRepeat =
+    confirm(`要把「${order.customer}」這筆紀錄帶入今日出貨嗎？`);
+
+    if(!confirmRepeat) return;
+
+    currentCustomer =
+    order.customer;
 
     localStorage.setItem(
         "currentCustomer",
@@ -259,17 +253,11 @@ function loadHistoryToCurrentOrder(id){
     );
 
     orderItems =
-    order.items.map(item=>({ ...item }));
+    JSON.parse(JSON.stringify(order.items || []));
 
     saveCurrentOrder();
 
-    const customerSelect =
-    document.getElementById("customerSelect");
-
-    if(customerSelect){
-        customerSelect.value = currentCustomer;
-    }
-
+    renderCustomerSelect();
     updateCurrentCustomerBox();
     renderOrderList();
 
@@ -281,17 +269,16 @@ function loadHistoryToCurrentOrder(id){
         page.classList.remove("active-page");
     });
 
-    const deliveryTab =
-    document.querySelector('.tab[data-page="deliveryPage"]');
+    document.querySelector('[data-page="deliveryPage"]').classList.add("active");
+    document.getElementById("deliveryPage").classList.add("active-page");
 
-    if(deliveryTab){
-        deliveryTab.classList.add("active");
-    }
+    alert("已帶入今日出貨，可直接修改後重新出貨");
 
-    document.getElementById("deliveryPage")
-    .classList.add("active-page");
+}
 
-    alert("已帶入今日出貨，可直接修改或新增商品");
+function editHistoryOrder(id){
+
+    repeatHistoryOrder(id);
 
 }
 

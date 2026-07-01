@@ -68,7 +68,7 @@
     padding:14px;
     border-radius:12px;
     font-family:"Courier New","Noto Sans Mono","PingFang TC",monospace;
-    font-size:13px;
+    font-size:12px;
     line-height:1.65;
     white-space:pre;
     overflow-x:auto;
@@ -88,4 +88,12 @@
 
 #shipDateInput{
     margin-bottom:12px;
+}
+
+
+@media(max-width:768px){
+    .receipt-preview{
+        font-size:11px;
+        padding:12px;
+    }
 }

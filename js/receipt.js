@@ -17,30 +17,40 @@ function getReceiptColumns(item){
 
     let qtyText = "";
     let unitText = "";
+    let noteText = "";
 
     if(item.priceMode === "weight"){
 
-        qtyText = item.weight || "";
-
         if(item.qty){
-            qtyText += `(${item.qty}${item.unit || ""})`;
+            qtyText = String(item.qty);
+            unitText = item.unit || "";
+        }else{
+            qtyText = "";
+            unitText = "";
         }
 
-        unitText = item.unit || "";
+        noteText = item.weight || "";
 
     }else{
 
         qtyText = item.qty || "";
         unitText = item.unit || "";
+        noteText = item.weight || "";
 
     }
 
+    const nameText =
+    item.remark
+    ? `${item.name}(${item.remark})`
+    : item.name;
+
     return {
-        name:item.remark ? `${item.name}(${item.remark})` : item.name,
+        name:nameText,
         qty:qtyText,
         unit:unitText,
         unitPrice:item.unitPrice || "",
-        amount:item.amount || ""
+        amount:item.amount || "",
+        note:noteText
     };
 
 }
@@ -49,13 +59,15 @@ function buildReceiptLine(row){
 
     return (
         padDisplay(row.name,12) +
-        padDisplay(row.qty,12,true) +
+        padDisplay(row.qty,6,true) +
         " " +
         padDisplay(row.unit,4,true) +
         " " +
         padDisplay(row.unitPrice,6,true) +
         " " +
-        padDisplay(`$${row.amount}`,7,true)
+        padDisplay(`$${row.amount}`,7,true) +
+        " " +
+        padDisplay(row.note || "",10)
     );
 
 }
@@ -63,7 +75,7 @@ function buildReceiptLine(row){
 function buildReceiptText(order){
 
     const line =
-    "------------------------------------";
+    "------------------------------------------------";
 
     let text = "";
 
@@ -77,7 +89,8 @@ function buildReceiptText(order){
         qty:"數量",
         unit:"單位",
         unitPrice:"單價",
-        amount:"金額"
+        amount:"金額",
+        note:"備註"
     });
 
     text += "\n";

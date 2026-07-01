@@ -7,94 +7,95 @@
 
 .history-card{
     position:relative;
-    overflow:hidden;
-    background:var(--soft);
-    padding:14px;
-    border-radius:18px;
     margin-bottom:14px;
-    cursor:pointer;
 }
 
 .history-swipe-wrap{
     position:relative;
     overflow:hidden;
+    border:1px solid var(--line);
     border-radius:16px;
-    margin-top:10px;
+    background:#fffdf8;
 }
 
 .history-main{
     position:relative;
     z-index:2;
-    background:var(--soft);
+    background:#fffdf8;
+    padding:14px 18px;
+    min-height:88px;
     transition:transform .24s ease;
 }
 
-.history-swipe-delete{
+.history-customer{
+    font-size:21px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.history-meta{
+    display:flex;
+    gap:18px;
+    font-size:15px;
+    color:#444;
+    margin-bottom:5px;
+}
+
+.history-count{
+    font-size:14px;
+    color:#666;
+}
+
+.history-action-panel{
     position:absolute;
     right:0;
     top:0;
     bottom:0;
-    width:108px;
-    border:none;
-    background:var(--danger);
-    color:white;
-    font-size:22px;
-    font-weight:800;
     z-index:1;
-    border-radius:0 16px 16px 0;
+    display:flex;
+    width:292px;
+}
+
+.history-action-btn{
+    width:73px;
+    border:none;
+    color:white;
+    font-size:14px;
+    font-weight:800;
+}
+
+.history-action-btn.view{
+    background:#2f5742;
+}
+
+.history-action-btn.edit{
+    background:#2f7369;
+}
+
+.history-action-btn.repeat{
+    background:#c77928;
+}
+
+.history-action-btn.delete{
+    background:#d9534f;
 }
 
 .history-swipe-wrap.swipe-delete .history-main{
-    transform:translateX(-108px);
-}
-
-.history-actions{
-    display:flex;
-    gap:12px;
-}
-
-.history-actions button{
-    flex:1;
-    border:none;
-    border-radius:999px;
-    background:#e5e5e5;
-    padding:9px 10px;
-    font-size:16px;
-}
-
-.history-detail{
-    display:none;
-    margin-top:12px;
-    border-top:1px solid var(--line);
-    padding-top:12px;
-}
-
-.history-detail.show{
-    display:block;
+    transform:translateX(-292px);
 }
 
 @media(min-width:769px){
-    .history-swipe-wrap{
-        overflow:visible;
+
+    .history-action-panel{
+        width:320px;
     }
 
-    .history-main{
-        transform:none !important;
+    .history-action-btn{
+        width:80px;
     }
 
-    .history-swipe-delete{
-        position:static;
-        display:block;
-        width:100%;
-        margin-top:8px;
-        border-radius:12px;
-        padding:9px;
-        font-size:14px;
-        opacity:.7;
+    .history-swipe-wrap.swipe-delete .history-main{
+        transform:translateX(-320px);
     }
-}
 
-.history-actions-extended{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
 }
