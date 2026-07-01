@@ -260,10 +260,7 @@ async function quickAddProductFromSearch(name){
 
     if(!trimmedName) return;
 
-    const allProducts =
-    Object.values(productStore).flat();
-
-    if(allProducts.includes(trimmedName)){
+    if(productExists(trimmedName)){
         alert("已存在此商品");
         return;
     }
@@ -308,8 +305,11 @@ async function renameProduct(category,name){
 
     if(!trimmedName) return;
 
-    if(productStore[category] && productStore[category].includes(trimmedName)){
-        alert("這個商品名稱已經存在");
+    const isSameName =
+    normalizeProductName(trimmedName) === normalizeProductName(name);
+
+    if(!isSameName && productExists(trimmedName)){
+        alert("已存在此商品");
         return;
     }
 

@@ -223,6 +223,11 @@ function bindManageButtons(){
             return;
         }
 
+        if(productExists(name)){
+            alert("已存在此商品");
+            return;
+        }
+
         const success =
         await addProductToSupabase(name,category);
 

@@ -88,3 +88,47 @@ function getOrderTotal(items){
 function safeText(value){
     return String(value ?? "");
 }
+
+
+function normalizeProductName(name){
+    return String(name || "").trim().replace(/\s+/g,"");
+}
+
+function productExists(name){
+    const target =
+    normalizeProductName(name);
+
+    return Object
+    .values(productStore)
+    .flat()
+    .some(item=>normalizeProductName(item) === target);
+}
+
+function textDisplayWidth(text){
+    return Array.from(String(text || ""))
+    .reduce((sum,char)=>{
+        return sum + (
+            /[^\x00-\xff]/.test(char)
+            ? 2
+            : 1
+        );
+    },0);
+}
+
+function padDisplay(text,width,alignRight = false){
+    text = String(text || "");
+
+    const currentWidth =
+    textDisplayWidth(text);
+
+    if(currentWidth >= width){
+        return text;
+    }
+
+    const spaces =
+    " ".repeat(width - currentWidth);
+
+    return alignRight
+    ? spaces + text
+    : text + spaces;
+}

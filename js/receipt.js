@@ -6,7 +6,7 @@ function formatReceiptDate(dateValue){
     new Date(dateValue);
 
     if(isNaN(date.getTime())){
-        return dateValue.replaceAll("-","/");
+        return String(dateValue).replaceAll("-","/");
     }
 
     return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
@@ -23,7 +23,7 @@ function getReceiptColumns(item){
         qtyText = item.weight || "";
 
         if(item.qty){
-            qtyText += `（${item.qty}${item.unit || ""}）`;
+            qtyText += `(${item.qty}${item.unit || ""})`;
         }
 
         unitText = item.unit || "";
@@ -45,16 +45,43 @@ function getReceiptColumns(item){
 
 }
 
+function buildReceiptLine(row){
+
+    return (
+        padDisplay(row.name,12) +
+        padDisplay(row.qty,12,true) +
+        " " +
+        padDisplay(row.unit,4,true) +
+        " " +
+        padDisplay(row.unitPrice,6,true) +
+        " " +
+        padDisplay(`$${row.amount}`,7,true)
+    );
+
+}
+
 function buildReceiptText(order){
+
+    const line =
+    "------------------------------------";
 
     let text = "";
 
     text += "【康源蔬果行】\n\n";
     text += `${order.customer}\n`;
     text += `${formatReceiptDate(order.date)}\n`;
-    text += "------------------------------\n";
-    text += "品名        數量    單位  單價  金額\n";
-    text += "------------------------------\n";
+    text += `${line}\n`;
+
+    text += buildReceiptLine({
+        name:"品名",
+        qty:"數量",
+        unit:"單位",
+        unitPrice:"單價",
+        amount:"金額"
+    });
+
+    text += "\n";
+    text += `${line}\n`;
 
     order.items.forEach(item=>{
 
@@ -62,11 +89,11 @@ function buildReceiptText(order){
         getReceiptColumns(item);
 
         text +=
-        `${row.name}  ${row.qty}  ${row.unit}  ${row.unitPrice}  $${row.amount}\n`;
+        buildReceiptLine(row) + "\n";
 
     });
 
-    text += "------------------------------\n";
+    text += `${line}\n`;
     text += `合計：$${order.total}`;
 
     return text;

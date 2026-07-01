@@ -194,6 +194,16 @@ function saveModalItem(){
 
     }else{
 
+        const duplicatedItem =
+        orderItems.some(item=>
+            normalizeProductName(item.name) === normalizeProductName(currentProduct)
+        );
+
+        if(duplicatedItem){
+            alert("此商品已在出貨清單中，請點原品項編輯數量或金額");
+            return;
+        }
+
         orderItems.push(itemData);
 
     }
