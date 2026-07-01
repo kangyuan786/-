@@ -141,7 +141,7 @@ function renderHistory(){
             <div><strong>${safeText(order.customer)}</strong></div>
 
             <div>
-                ${new Date(order.date).toLocaleString("zh-TW")}
+                ${formatReceiptDate(order.date)}
             </div>
 
             <div>
@@ -158,13 +158,21 @@ function renderHistory(){
 
                 <div class="history-main">
 
-                    <div class="history-actions">
+                    <div class="history-actions history-actions-extended">
                         <button onclick="viewHistoryReceipt('${order.id}')">
                             👁️ 查看
                         </button>
 
                         <button onclick="copyHistoryReceipt('${order.id}')">
                             📋 重印
+                        </button>
+
+                        <button onclick="loadHistoryToCurrentOrder('${order.id}')">
+                            ✏️ 編輯
+                        </button>
+
+                        <button onclick="loadHistoryToCurrentOrder('${order.id}')">
+                            🔁 再出貨
                         </button>
                     </div>
 
@@ -230,6 +238,60 @@ function bindHistorySwipe(card){
         }
 
     });
+
+}
+
+function loadHistoryToCurrentOrder(id){
+
+    const order =
+    historyOrders.find(item=>String(item.id) === String(id));
+
+    if(!order){
+        alert("找不到這筆歷史紀錄");
+        return;
+    }
+
+    currentCustomer = order.customer;
+
+    localStorage.setItem(
+        "currentCustomer",
+        currentCustomer
+    );
+
+    orderItems =
+    order.items.map(item=>({ ...item }));
+
+    saveCurrentOrder();
+
+    const customerSelect =
+    document.getElementById("customerSelect");
+
+    if(customerSelect){
+        customerSelect.value = currentCustomer;
+    }
+
+    updateCurrentCustomerBox();
+    renderOrderList();
+
+    document.querySelectorAll(".tab").forEach(tab=>{
+        tab.classList.remove("active");
+    });
+
+    document.querySelectorAll(".page").forEach(page=>{
+        page.classList.remove("active-page");
+    });
+
+    const deliveryTab =
+    document.querySelector('.tab[data-page="deliveryPage"]');
+
+    if(deliveryTab){
+        deliveryTab.classList.add("active");
+    }
+
+    document.getElementById("deliveryPage")
+    .classList.add("active-page");
+
+    alert("已帶入今日出貨，可直接修改或新增商品");
 
 }
 

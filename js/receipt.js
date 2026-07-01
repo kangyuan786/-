@@ -1,25 +1,72 @@
+function formatReceiptDate(dateValue){
+
+    if(!dateValue) return "";
+
+    const date =
+    new Date(dateValue);
+
+    if(isNaN(date.getTime())){
+        return dateValue.replaceAll("-","/");
+    }
+
+    return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
+
+}
+
+function getReceiptColumns(item){
+
+    let qtyText = "";
+    let unitText = "";
+
+    if(item.priceMode === "weight"){
+
+        qtyText = item.weight || "";
+
+        if(item.qty){
+            qtyText += `（${item.qty}${item.unit || ""}）`;
+        }
+
+        unitText = item.unit || "";
+
+    }else{
+
+        qtyText = item.qty || "";
+        unitText = item.unit || "";
+
+    }
+
+    return {
+        name:item.remark ? `${item.name}(${item.remark})` : item.name,
+        qty:qtyText,
+        unit:unitText,
+        unitPrice:item.unitPrice || "",
+        amount:item.amount || ""
+    };
+
+}
+
 function buildReceiptText(order){
 
     let text = "";
 
-    text += "蔬果出貨單\n\n";
+    text += "【康源蔬果行】\n\n";
     text += `${order.customer}\n`;
-    text += `${new Date(order.date).toLocaleString("zh-TW")}\n`;
-    text += "--------------------\n";
+    text += `${formatReceiptDate(order.date)}\n`;
+    text += "------------------------------\n";
+    text += "品名        數量    單位  單價  金額\n";
+    text += "------------------------------\n";
 
     order.items.forEach(item=>{
 
-        const remark =
-        item.remark
-        ? `(${item.remark})`
-        : "";
+        const row =
+        getReceiptColumns(item);
 
         text +=
-        `${item.name}${remark} ${getItemQtyText(item)} $${item.amount}\n`;
+        `${row.name}  ${row.qty}  ${row.unit}  ${row.unitPrice}  $${row.amount}\n`;
 
     });
 
-    text += "--------------------\n";
+    text += "------------------------------\n";
     text += `合計：$${order.total}`;
 
     return text;

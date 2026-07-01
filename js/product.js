@@ -129,6 +129,12 @@ function renderManageProductList(){
 
                 <div>
                     <button
+                        class="preset-inline-btn"
+                        onclick="setProductDefault('${safeText(name)}')">
+                        設定
+                    </button>
+
+                    <button
                         class="edit-inline-btn"
                         onclick="renameProduct('${safeText(category)}','${safeText(name)}')">
                         編輯
@@ -155,12 +161,22 @@ function addProduct(productName){
     currentProduct = productName;
     editIndex = null;
 
+    const defaults =
+    productDefaults[productName] || {};
+
     document.getElementById("modalTitle").innerText = productName;
 
-    document.getElementById("priceModeInput").value = "fixed";
+    document.getElementById("priceModeInput").value =
+    defaults.priceMode || "fixed";
+
     document.getElementById("qtyInput").value = "";
-    document.getElementById("unitInput").value = "包";
-    document.getElementById("unitPriceInput").value = "";
+
+    document.getElementById("unitInput").value =
+    defaults.unit || "包";
+
+    document.getElementById("unitPriceInput").value =
+    defaults.unitPrice || "";
+
     document.getElementById("amountInput").value = "";
     document.getElementById("weightInput").value = "";
     document.getElementById("remarkInput").value = "";
@@ -188,6 +204,98 @@ function saveRecentProduct(productName){
 
 }
 
+function saveProductDefaults(){
+    localStorage.setItem(
+        "productDefaults",
+        JSON.stringify(productDefaults)
+    );
+}
+
+function setProductDefault(name){
+
+    const current =
+    productDefaults[name] || {};
+
+    const mode =
+    prompt(
+        "預設計價模式：fixed=固定單價，weight=秤重計價",
+        current.priceMode || "fixed"
+    );
+
+    if(!mode) return;
+
+    const finalMode =
+    mode.trim() === "weight" ? "weight" : "fixed";
+
+    const unit =
+    prompt(
+        "預設單位，例如：包、顆、斤、把",
+        current.unit || "包"
+    );
+
+    if(!unit) return;
+
+    const unitPrice =
+    prompt(
+        "預設單價，可空白",
+        current.unitPrice || ""
+    );
+
+    productDefaults[name] = {
+        priceMode:finalMode,
+        unit:unit.trim(),
+        unitPrice:unitPrice ? unitPrice.trim() : ""
+    };
+
+    saveProductDefaults();
+
+    alert("商品預設資料已儲存");
+
+}
+
+async function quickAddProductFromSearch(name){
+
+    const trimmedName =
+    name.trim();
+
+    if(!trimmedName) return;
+
+    const allProducts =
+    Object.values(productStore).flat();
+
+    if(allProducts.includes(trimmedName)){
+        alert("已存在此商品");
+        return;
+    }
+
+    const activeBtn =
+    document.querySelector(".category-btn.active");
+
+    let category =
+    activeBtn ? activeBtn.dataset.category : "vegetables";
+
+    if(category === "all"){
+        category = "vegetables";
+    }
+
+    const success =
+    await addProductToSupabase(trimmedName,category);
+
+    if(!success){
+        alert("新增失敗");
+        return;
+    }
+
+    await initProducts();
+
+    document.getElementById("productSearch").value = "";
+
+    alert("商品新增成功");
+
+    addProduct(trimmedName);
+
+}
+
 async function renameProduct(category,name){
 
     const newName =
@@ -211,6 +319,12 @@ async function renameProduct(category,name){
     if(!success){
         alert("修改失敗");
         return;
+    }
+
+    if(productDefaults[name]){
+        productDefaults[trimmedName] = productDefaults[name];
+        delete productDefaults[name];
+        saveProductDefaults();
     }
 
     recentProducts =
@@ -265,6 +379,9 @@ async function deleteProduct(category,name){
 
     recentProducts =
     recentProducts.filter(item=>item !== name);
+
+    delete productDefaults[name];
+    saveProductDefaults();
 
     localStorage.setItem(
         "recentProducts",

@@ -180,9 +180,9 @@ async function deleteProductFromSupabase(category,name){
 async function saveOrderToSupabase(order){
 
     const orderDate =
-    new Date()
-    .toISOString()
-    .slice(0,10);
+    order.date
+    ? String(order.date).slice(0,10)
+    : new Date().toISOString().slice(0,10);
 
     const { data, error } =
     await supabaseClient
@@ -291,7 +291,7 @@ async function loadOrdersFromSupabase(){
         return {
             id:order.id,
             customer:order.customer_name,
-            date:order.created_at,
+            date:order.order_date || order.created_at,
             total:order.total,
             items:orderItems
         };

@@ -219,9 +219,24 @@ function openCheckoutPreview(){
         return;
     }
 
+    const shipDateInput =
+    document.getElementById("shipDateInput");
+
+    const today =
+    new Date().toISOString().slice(0,10);
+
+    if(shipDateInput && !shipDateInput.value){
+        shipDateInput.value = today;
+    }
+
+    const shipDate =
+    shipDateInput && shipDateInput.value
+    ? shipDateInput.value
+    : today;
+
     pendingOrder = {
         id:Date.now(),
-        date:new Date().toLocaleString("zh-TW"),
+        date:shipDate,
         customer:currentCustomer,
         items:[...orderItems],
         total:getOrderTotal(orderItems)
@@ -234,9 +249,27 @@ function openCheckoutPreview(){
 
 }
 
+function updatePendingReceiptDate(){
+
+    if(!pendingOrder) return;
+
+    const shipDateInput =
+    document.getElementById("shipDateInput");
+
+    if(shipDateInput && shipDateInput.value){
+        pendingOrder.date = shipDateInput.value;
+    }
+
+    document.getElementById("receiptPreview").innerText =
+    buildReceiptText(pendingOrder);
+
+}
+
 async function confirmCheckout(){
 
     if(!pendingOrder) return;
+
+    updatePendingReceiptDate();
 
     const savedOrder =
     await saveOrderToSupabase(pendingOrder);

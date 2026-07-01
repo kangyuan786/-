@@ -4,6 +4,9 @@ JSON.parse(localStorage.getItem("recentProducts")) || [];
 let productStore = {};
 let customerStore = [];
 
+let productDefaults =
+JSON.parse(localStorage.getItem("productDefaults")) || {};
+
 let orderItems =
 JSON.parse(localStorage.getItem("orderItems")) || [];
 

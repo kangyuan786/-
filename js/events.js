@@ -75,6 +75,14 @@ function bindEvents(){
 
     });
 
+
+    const shipDateInput =
+    document.getElementById("shipDateInput");
+
+    if(shipDateInput){
+        shipDateInput.addEventListener("change",updatePendingReceiptDate);
+    }
+
     document.getElementById("confirmCheckoutBtn")
     .addEventListener("click",confirmCheckout);
 
@@ -99,7 +107,7 @@ function bindProductSearch(){
     productSearch.addEventListener("input",()=>{
 
         const keyword =
-        productSearch.value.trim().toLowerCase();
+        productSearch.value.trim();
 
         if(keyword === ""){
 
@@ -126,13 +134,19 @@ function bindProductSearch(){
 
         const results =
         allProducts.filter(name=>
-            name.toLowerCase().includes(keyword)
+            name.toLowerCase().includes(keyword.toLowerCase())
         );
 
         if(results.length === 0){
 
-            productGrid.innerHTML =
-            `<div class="empty-text">找不到商品</div>`;
+            productGrid.innerHTML = `
+                <div class="empty-text">找不到商品</div>
+                <button
+                    class="quick-add-product"
+                    onclick="quickAddProductFromSearch('${keyword}')">
+                    ＋ 新增「${keyword}」為商品
+                </button>
+            `;
 
             return;
 

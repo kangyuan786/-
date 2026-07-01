@@ -77,3 +77,14 @@
 .receipt-buttons{
     flex-direction:column;
 }
+
+.field-label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:700;
+    color:var(--green);
+}
+
+#shipDateInput{
+    margin-bottom:12px;
+}
