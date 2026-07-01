@@ -745,3 +745,88 @@ body.receipt-lock{
 #downloadReceiptImageBtn:disabled{
     opacity:.6 !important;
 }
+
+
+/* ===============================
+   V4.1 Receipt 5-column layout
+   數量與單位合併，標題不擠
+================================ */
+
+.receipt-grid,
+.receipt-grid-row{
+    grid-template-columns:2.65fr .9fr .8fr 1.05fr .9fr !important;
+    column-gap:7px !important;
+}
+
+.receipt-grid-head{
+    font-size:11.5px !important;
+}
+
+.receipt-grid-head .receipt-col{
+    text-align:center !important;
+    white-space:nowrap !important;
+}
+
+.receipt-grid-head .receipt-name{
+    text-align:left !important;
+}
+
+.receipt-unit{
+    display:none !important;
+}
+
+.receipt-qty{
+    text-align:right !important;
+    white-space:nowrap !important;
+}
+
+.receipt-price{
+    text-align:right !important;
+    white-space:nowrap !important;
+}
+
+.receipt-money{
+    text-align:right !important;
+    white-space:nowrap !important;
+}
+
+.receipt-note{
+    text-align:left !important;
+    white-space:nowrap !important;
+}
+
+@media(max-width:768px){
+
+    .receipt-grid,
+    .receipt-grid-row{
+        grid-template-columns:2.75fr .82fr .68fr .94fr .78fr !important;
+        column-gap:5px !important;
+    }
+
+    .receipt-grid-head{
+        font-size:10.5px !important;
+    }
+
+    .receipt-grid-row{
+        font-size:12.2px !important;
+    }
+
+}
+
+@media(max-width:390px){
+
+    .receipt-grid,
+    .receipt-grid-row{
+        grid-template-columns:2.85fr .76fr .62fr .88fr .72fr !important;
+        column-gap:4px !important;
+    }
+
+    .receipt-grid-head{
+        font-size:10px !important;
+    }
+
+    .receipt-grid-row{
+        font-size:11.6px !important;
+    }
+
+}

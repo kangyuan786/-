@@ -16,22 +16,23 @@ function formatReceiptDate(dateValue){
 function getReceiptColumns(item){
 
     let qtyText = "";
-    let unitText = "";
     let noteText = "";
 
     if(item.priceMode === "weight"){
 
         if(item.qty){
-            qtyText = String(item.qty);
-            unitText = item.unit || "";
+            qtyText = `${item.qty}${item.unit || ""}`;
         }
 
         noteText = item.weight || "";
 
     }else{
 
-        qtyText = item.qty || "";
-        unitText = item.unit || "";
+        qtyText =
+        item.qty
+        ? `${item.qty}${item.unit || ""}`
+        : "";
+
         noteText = item.weight || "";
 
     }
@@ -44,7 +45,7 @@ function getReceiptColumns(item){
     return {
         name:nameText,
         qty:qtyText,
-        unit:unitText,
+        unit:"",
         unitPrice:item.unitPrice || "",
         amount:item.amount || "",
         note:noteText
@@ -85,7 +86,6 @@ function buildReceiptHtml(order){
             <div class="receipt-grid receipt-grid-head">
                 <div class="receipt-col receipt-name">品名</div>
                 <div class="receipt-col receipt-qty">數量</div>
-                <div class="receipt-col receipt-unit">單位</div>
                 <div class="receipt-col receipt-price">單價</div>
                 <div class="receipt-col receipt-money">金額</div>
                 <div class="receipt-col receipt-note">備註</div>
@@ -109,14 +109,12 @@ function buildReceiptHtml(order){
 function buildReceiptLine(row){
 
     return (
-        padDisplay(row.name,12) +
-        padDisplay(row.qty,6,true) +
-        " " +
-        padDisplay(row.unit,4,true) +
+        padDisplay(row.name,14) +
+        padDisplay(row.qty,8,true) +
         " " +
         padDisplay(row.unitPrice,6,true) +
         " " +
-        padDisplay(`$${row.amount}`,7,true) +
+        padDisplay(`$${row.amount}`,8,true) +
         " " +
         padDisplay(row.note || "",10)
     );
@@ -136,7 +134,7 @@ function buildReceiptText(order){
     text += buildReceiptLine({
         name:"品名",
         qty:"數量",
-        unit:"單位",
+        unit:"",
         unitPrice:"單價",
         amount:"金額",
         note:"備註"

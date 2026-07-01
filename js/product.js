@@ -29,6 +29,37 @@ async function initProducts(){
 
 }
 
+function getCategoryLabel(category){
+
+    const labels = {
+        vegetables:"🥬 蔬菜類",
+        mushrooms:"🍄 菇類與藻類",
+        meat:"🥩 肉類與海鮮",
+        tofu:"🥚 豆製品與蛋類",
+        fruits:"🍎 水果類",
+        processed:"🥫 加工製品",
+        other:"📦 其他"
+    };
+
+    return labels[category] || category;
+
+}
+
+function createProductButton(name){
+
+    const button =
+    document.createElement("button");
+
+    button.innerText = name;
+
+    button.addEventListener("click",()=>{
+        addProduct(name);
+    });
+
+    return button;
+
+}
+
 function renderProducts(category = "all"){
 
     const productGrid =
@@ -38,33 +69,54 @@ function renderProducts(category = "all"){
 
     productGrid.innerHTML = "";
 
-    let products = [];
-
     if(category === "all"){
 
-        Object.values(productStore).forEach(group=>{
-            products = products.concat(group);
+        Object
+        .entries(productStore)
+        .forEach(([categoryName, products], index)=>{
+
+            const section =
+            document.createElement("details");
+
+            section.className =
+            "product-collapse";
+
+            if(index === 0){
+                section.open = true;
+            }
+
+            const summary =
+            document.createElement("summary");
+
+            summary.innerHTML =
+            `<span>${getCategoryLabel(categoryName)}</span><span>${products.length}項</span>`;
+
+            const grid =
+            document.createElement("div");
+
+            grid.className =
+            "product-grid product-collapse-grid";
+
+            products.forEach(name=>{
+                grid.appendChild(createProductButton(name));
+            });
+
+            section.appendChild(summary);
+            section.appendChild(grid);
+
+            productGrid.appendChild(section);
+
         });
 
-    }else{
-
-        products = productStore[category] || [];
+        return;
 
     }
 
+    const products =
+    productStore[category] || [];
+
     products.forEach(name=>{
-
-        const button =
-        document.createElement("button");
-
-        button.innerText = name;
-
-        button.addEventListener("click",()=>{
-            addProduct(name);
-        });
-
-        productGrid.appendChild(button);
-
+        productGrid.appendChild(createProductButton(name));
     });
 
 }
