@@ -230,3 +230,53 @@ function viewHistoryReceipt(id){
     }
 
 }
+
+
+async function downloadReceiptImage(){
+
+    const paper =
+    document.querySelector(".receipt-paper");
+
+    if(!paper){
+        alert("目前沒有可下載的出貨單");
+        return;
+    }
+
+    if(typeof html2canvas === "undefined"){
+        alert("圖片下載工具尚未載入，請重新整理後再試一次");
+        return;
+    }
+
+    const canvas =
+    await html2canvas(
+        paper,
+        {
+            backgroundColor:"#fffdf7",
+            scale:2
+        }
+    );
+
+    const link =
+    document.createElement("a");
+
+    const customer =
+    pendingOrder && pendingOrder.customer
+    ? pendingOrder.customer
+    : "出貨單";
+
+    const date =
+    pendingOrder && pendingOrder.date
+    ? formatReceiptDate(pendingOrder.date).replaceAll("/","-")
+    : new Date().toISOString().slice(0,10);
+
+    link.download =
+    `康源蔬果行_${customer}_${date}.png`;
+
+    link.href =
+    canvas.toDataURL("image/png");
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+}
