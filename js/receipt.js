@@ -24,9 +24,6 @@ function getReceiptColumns(item){
         if(item.qty){
             qtyText = String(item.qty);
             unitText = item.unit || "";
-        }else{
-            qtyText = "";
-            unitText = "";
         }
 
         noteText = item.weight || "";
@@ -64,14 +61,14 @@ function buildReceiptHtml(order){
         getReceiptColumns(item);
 
         return `
-            <tr>
-                <td class="receipt-name">${safeText(row.name)}</td>
-                <td class="receipt-num">${safeText(row.qty)}</td>
-                <td class="receipt-unit">${safeText(row.unit)}</td>
-                <td class="receipt-price">${safeText(row.unitPrice)}</td>
-                <td class="receipt-money">$${safeText(row.amount)}</td>
-                <td class="receipt-note">${safeText(row.note)}</td>
-            </tr>
+            <div class="receipt-grid-row">
+                <div class="receipt-col receipt-name">${safeText(row.name)}</div>
+                <div class="receipt-col receipt-qty">${safeText(row.qty)}</div>
+                <div class="receipt-col receipt-unit">${safeText(row.unit)}</div>
+                <div class="receipt-col receipt-price">${safeText(row.unitPrice)}</div>
+                <div class="receipt-col receipt-money">$${safeText(row.amount)}</div>
+                <div class="receipt-col receipt-note">${safeText(row.note)}</div>
+            </div>
         `;
 
     }).join("");
@@ -79,42 +76,30 @@ function buildReceiptHtml(order){
     return `
         <div class="receipt-paper">
 
-            <div class="receipt-title">
-                【康源蔬果行】
+            <div class="receipt-title">【康源蔬果行】</div>
+            <div class="receipt-customer">${safeText(order.customer)}</div>
+            <div class="receipt-date">${formatReceiptDate(order.date)}</div>
+
+            <div class="receipt-dash"></div>
+
+            <div class="receipt-grid receipt-grid-head">
+                <div class="receipt-col receipt-name">品名</div>
+                <div class="receipt-col receipt-qty">數量</div>
+                <div class="receipt-col receipt-unit">單位</div>
+                <div class="receipt-col receipt-price">單價</div>
+                <div class="receipt-col receipt-money">金額</div>
+                <div class="receipt-col receipt-note">備註</div>
             </div>
 
-            <div class="receipt-customer">
-                ${safeText(order.customer)}
-            </div>
+            <div class="receipt-dash receipt-dash-thin"></div>
 
-            <div class="receipt-date">
-                ${formatReceiptDate(order.date)}
+            <div class="receipt-grid-body">
+                ${rows}
             </div>
 
             <div class="receipt-dash"></div>
 
-            <table class="receipt-table">
-                <thead>
-                    <tr>
-                        <th class="receipt-name">品名</th>
-                        <th class="receipt-num">數量</th>
-                        <th class="receipt-unit">單位</th>
-                        <th class="receipt-price">單價</th>
-                        <th class="receipt-money">金額</th>
-                        <th class="receipt-note">備註</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    ${rows}
-                </tbody>
-            </table>
-
-            <div class="receipt-dash"></div>
-
-            <div class="receipt-total">
-                合計：$${order.total}
-            </div>
+            <div class="receipt-total">合計：$${order.total}</div>
 
         </div>
     `;
@@ -140,9 +125,7 @@ function buildReceiptLine(row){
 
 function buildReceiptText(order){
 
-    const line =
-    "------------------------------------------------";
-
+    const line = "------------------------------------------------";
     let text = "";
 
     text += "【康源蔬果行】\n\n";
@@ -164,11 +147,8 @@ function buildReceiptText(order){
 
     order.items.forEach(item=>{
 
-        const row =
-        getReceiptColumns(item);
-
-        text +=
-        buildReceiptLine(row) + "\n";
+        const row = getReceiptColumns(item);
+        text += buildReceiptLine(row) + "\n";
 
     });
 
@@ -182,7 +162,6 @@ function buildReceiptText(order){
 async function copyText(text,message = "已複製"){
 
     await navigator.clipboard.writeText(text);
-
     alert(message);
 
 }
@@ -218,8 +197,7 @@ function viewHistoryReceipt(id){
     document.getElementById("receiptPreview");
 
     if(preview){
-        preview.innerHTML =
-        buildReceiptHtml(order);
+        preview.innerHTML = buildReceiptHtml(order);
 
         document
         .getElementById("receiptModal")
@@ -230,7 +208,6 @@ function viewHistoryReceipt(id){
     }
 
 }
-
 
 function removeReceiptImagePreview(){
 
@@ -293,11 +270,8 @@ async function generateReceiptImagePreview(){
         const wrap =
         document.createElement("div");
 
-        wrap.id =
-        "receiptImagePreviewWrap";
-
-        wrap.className =
-        "receipt-image-preview-wrap";
+        wrap.id = "receiptImagePreviewWrap";
+        wrap.className = "receipt-image-preview-wrap";
 
         wrap.innerHTML = `
             <div class="receipt-image-tip">
@@ -341,12 +315,6 @@ async function generateReceiptImagePreview(){
 
 }
 
-function openReceiptFullscreen(){
-
-    generateReceiptImagePreview();
-
-}
-
 function closeReceiptFullscreen(){
 
     removeReceiptImagePreview();
@@ -366,7 +334,3 @@ async function downloadReceiptImage(){
     await generateReceiptImagePreview();
 
 }
-
-
-
-
