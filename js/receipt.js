@@ -238,12 +238,12 @@ async function downloadReceiptImage(){
     document.querySelector(".receipt-paper");
 
     if(!paper){
-        alert("目前沒有可下載的出貨單");
+        alert("目前沒有可分享的出貨單");
         return;
     }
 
     if(typeof html2canvas === "undefined"){
-        alert("圖片下載工具尚未載入，請重新整理後再試一次");
+        alert("圖片工具尚未載入，請重新整理後再試一次");
         return;
     }
 
@@ -252,12 +252,10 @@ async function downloadReceiptImage(){
         paper,
         {
             backgroundColor:"#fffdf7",
-            scale:2
+            scale:2,
+            useCORS:true
         }
     );
-
-    const link =
-    document.createElement("a");
 
     const customer =
     pendingOrder && pendingOrder.customer
@@ -269,14 +267,93 @@ async function downloadReceiptImage(){
     ? formatReceiptDate(pendingOrder.date).replaceAll("/","-")
     : new Date().toISOString().slice(0,10);
 
-    link.download =
+    const fileName =
     `康源蔬果行_${customer}_${date}.png`;
 
-    link.href =
-    canvas.toDataURL("image/png");
+    canvas.toBlob(async(blob)=>{
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        if(!blob){
+            alert("圖片產生失敗，請再試一次");
+            return;
+        }
+
+        const file =
+        new File(
+            [blob],
+            fileName,
+            {
+                type:"image/png"
+            }
+        );
+
+        if(
+            navigator.canShare &&
+            navigator.canShare({
+                files:[file]
+            })
+        ){
+
+            try{
+
+                await navigator.share({
+                    files:[file],
+                    title:"康源蔬果行出貨單",
+                    text:`${customer} ${date} 出貨單`
+                });
+
+                return;
+
+            }catch(error){
+
+                console.warn(
+                    "分享取消或失敗",
+                    error
+                );
+
+                if(error && error.name === "AbortError"){
+                    return;
+                }
+
+            }
+
+        }
+
+        const imageUrl =
+        URL.createObjectURL(blob);
+
+        const imageWindow =
+        window.open(imageUrl,"_blank");
+
+        if(!imageWindow){
+
+            const link =
+            document.createElement("a");
+
+            link.href = imageUrl;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.innerText = "點我開啟出貨單圖片";
+            link.style.display = "block";
+            link.style.marginTop = "12px";
+            link.style.fontSize = "18px";
+            link.style.color = "#006fe6";
+
+            const preview =
+            document.getElementById("receiptPreview");
+
+            if(preview){
+                preview.appendChild(link);
+            }
+
+            alert("已產生圖片連結，請點出貨單下方連結開啟後長按儲存。");
+
+            return;
+
+        }
+
+        alert("圖片已開啟，請長按圖片儲存或分享。");
+
+    },"image/png");
 
 }
+
