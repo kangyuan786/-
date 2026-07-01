@@ -63,15 +63,15 @@
 }
 
 .receipt-preview{
-    background:#fffdf7;
-    border:1px dashed #aaa;
-    padding:14px;
-    border-radius:12px;
-    font-family:"Courier New","Noto Sans Mono","PingFang TC",monospace;
-    font-size:12px;
-    line-height:1.65;
-    white-space:pre;
-    overflow-x:auto;
+    background:transparent;
+    border:none;
+    padding:0;
+    border-radius:0;
+    font-family:"PingFang TC","Noto Sans TC",sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    white-space:normal;
+    overflow:visible;
     margin-bottom:14px;
 }
 
@@ -91,9 +91,147 @@
 }
 
 
+
+
+
+.receipt-paper{
+    background:#fffdf7;
+    border:1.5px dashed #aaa;
+    border-radius:18px;
+    padding:18px;
+    color:#222;
+}
+
+.receipt-title{
+    font-size:20px;
+    font-weight:900;
+    margin-bottom:20px;
+}
+
+.receipt-customer{
+    font-size:18px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.receipt-date{
+    font-size:16px;
+    letter-spacing:1px;
+    margin-bottom:12px;
+}
+
+.receipt-dash{
+    border-top:2px dashed #222;
+    margin:12px 0;
+}
+
+.receipt-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    font-size:14px;
+}
+
+.receipt-table th{
+    font-weight:900;
+    padding:6px 2px 8px;
+    border-bottom:1.5px dashed #222;
+}
+
+.receipt-table td{
+    padding:7px 2px;
+    border-bottom:1px solid rgba(0,0,0,.13);
+    vertical-align:middle;
+}
+
+.receipt-table tbody tr:last-child td{
+    border-bottom:none;
+}
+
+.receipt-name{
+    width:30%;
+    text-align:left;
+    font-weight:800;
+    word-break:break-word;
+}
+
+.receipt-num{
+    width:12%;
+    text-align:right;
+}
+
+.receipt-unit{
+    width:11%;
+    text-align:center;
+}
+
+.receipt-price{
+    width:13%;
+    text-align:right;
+}
+
+.receipt-money{
+    width:16%;
+    text-align:right;
+    font-weight:800;
+}
+
+.receipt-note{
+    width:18%;
+    text-align:right;
+    color:#444;
+    word-break:break-word;
+}
+
+.receipt-total{
+    font-size:18px;
+    font-weight:900;
+    margin-top:12px;
+}
+
 @media(max-width:768px){
-    .receipt-preview{
-        font-size:11px;
-        padding:12px;
+
+    .receipt-modal-content{
+        width:92%;
+        padding:18px;
     }
+
+    .receipt-paper{
+        padding:14px;
+        border-radius:16px;
+    }
+
+    .receipt-title{
+        font-size:18px;
+        margin-bottom:18px;
+    }
+
+    .receipt-table{
+        font-size:12.5px;
+    }
+
+    .receipt-name{
+        width:29%;
+    }
+
+    .receipt-num{
+        width:12%;
+    }
+
+    .receipt-unit{
+        width:10%;
+    }
+
+    .receipt-price{
+        width:13%;
+    }
+
+    .receipt-money{
+        width:17%;
+    }
+
+    .receipt-note{
+        width:19%;
+    }
+
 }

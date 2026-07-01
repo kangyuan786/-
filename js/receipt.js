@@ -41,7 +41,7 @@ function getReceiptColumns(item){
 
     const nameText =
     item.remark
-    ? `${item.name}(${item.remark})`
+    ? `${item.name}（${item.remark}）`
     : item.name;
 
     return {
@@ -52,6 +52,72 @@ function getReceiptColumns(item){
         amount:item.amount || "",
         note:noteText
     };
+
+}
+
+function buildReceiptHtml(order){
+
+    const rows =
+    order.items.map(item=>{
+
+        const row =
+        getReceiptColumns(item);
+
+        return `
+            <tr>
+                <td class="receipt-name">${safeText(row.name)}</td>
+                <td class="receipt-num">${safeText(row.qty)}</td>
+                <td class="receipt-unit">${safeText(row.unit)}</td>
+                <td class="receipt-price">${safeText(row.unitPrice)}</td>
+                <td class="receipt-money">$${safeText(row.amount)}</td>
+                <td class="receipt-note">${safeText(row.note)}</td>
+            </tr>
+        `;
+
+    }).join("");
+
+    return `
+        <div class="receipt-paper">
+
+            <div class="receipt-title">
+                【康源蔬果行】
+            </div>
+
+            <div class="receipt-customer">
+                ${safeText(order.customer)}
+            </div>
+
+            <div class="receipt-date">
+                ${formatReceiptDate(order.date)}
+            </div>
+
+            <div class="receipt-dash"></div>
+
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th class="receipt-name">品名</th>
+                        <th class="receipt-num">數量</th>
+                        <th class="receipt-unit">單位</th>
+                        <th class="receipt-price">單價</th>
+                        <th class="receipt-money">金額</th>
+                        <th class="receipt-note">備註</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+
+            <div class="receipt-dash"></div>
+
+            <div class="receipt-total">
+                合計：$${order.total}
+            </div>
+
+        </div>
+    `;
 
 }
 
@@ -148,8 +214,19 @@ function viewHistoryReceipt(id){
         return;
     }
 
-    alert(
-        buildReceiptText(order)
-    );
+    const preview =
+    document.getElementById("receiptPreview");
+
+    if(preview){
+        preview.innerHTML =
+        buildReceiptHtml(order);
+
+        document
+        .getElementById("receiptModal")
+        .classList
+        .add("show");
+    }else{
+        alert(buildReceiptText(order));
+    }
 
 }

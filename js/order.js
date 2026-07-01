@@ -252,8 +252,8 @@ function openCheckoutPreview(){
         total:getOrderTotal(orderItems)
     };
 
-    document.getElementById("receiptPreview").innerText =
-    buildReceiptText(pendingOrder);
+    document.getElementById("receiptPreview").innerHTML =
+    buildReceiptHtml(pendingOrder);
 
     document.getElementById("receiptModal").classList.add("show");
 
@@ -270,8 +270,8 @@ function updatePendingReceiptDate(){
         pendingOrder.date = shipDateInput.value;
     }
 
-    document.getElementById("receiptPreview").innerText =
-    buildReceiptText(pendingOrder);
+    document.getElementById("receiptPreview").innerHTML =
+    buildReceiptHtml(pendingOrder);
 
 }
 
